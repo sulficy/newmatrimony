@@ -1,0 +1,306 @@
+import React, { useEffect, useState } from "react";
+import { Modal, TextInput } from "flowbite-react";
+import { addFoodAPI } from "../../Services/allAPIs";
+
+const ManageDishes = () => {
+  const [categories, setCategories] = useState([]);
+  const [newCategory, setNewCategory] = useState("");
+  const [showCategoryModal, setShowCategoryModal] = useState(false);
+  const [showDishModal, setShowDishModal] = useState(false);
+  const [newDish, setNewDish] = useState({ name: "", price: "", image: "", category: "", description: ""});
+  const [dishes, setDishes] = useState([]);
+
+  const [preview,setPreview] = useState("")
+  useEffect(() => {
+    if(newDish.image){
+      setPreview(URL.createObjectURL(newDish.image))
+    }
+  },[newDish.image])
+  const handleAddCategory = () => {
+    if (newCategory.trim()) {
+      setCategories((prev) => [...prev, newCategory]);
+      setNewCategory("");
+      setShowCategoryModal(false);
+    } else {
+      alert("Category name cannot be empty!");
+    }
+  };
+
+  // const handleAddDish = async() => {
+  //   console.log(newDish);
+  //   const {name, price, image, category, description} = newDish
+  //   if(!name || !price || !image || !category || !description)
+  //       alert("All fields are required to add a new dish!");
+  //   else{
+  //     //api fetch
+  //     const reqBody = new FormData()
+  //     reqBody.append("name",name),
+  //     reqBody.append("price",price),
+  //     reqBody.append("image",image),
+  //     reqBody.append("category",category),
+  //     reqBody.append("description",description)
+
+  //     const token=sessionStorage.getItem("token")
+  //     if(token)
+  //     {
+  //       const reqHeader={
+  //         "Content-Type":"multipart/form-data",
+  //         "Authorization":Bearer ${token}
+  //       }
+  //       try{
+  //         const response = await addFoodAPI(reqBody,reqHeader)
+  //         console.log(response)
+  //         if(response.status>=200 && response.status<300)
+  //           alert('food added successfully')
+  //         else{
+  //           console.log("error"
+              
+  //           );
+            
+  //         }
+  //         setShowDishModal(false);
+
+  //       }
+  //       catch(err){
+  //         console.log("err:" + err);
+          
+  //       }
+  //     }
+
+  //   }
+  //   // if (newDish.name.trim() && newDish.price.trim() && newDish.image) {
+  //   //   setDishes((prev) => [...prev, { ...newDish, price: $${newDish.price} }]);
+  //   //   setNewDish({ name: "", image: null, price: "" });
+  //   //   setShowDishModal(false);
+  //   // } else {
+  //   //   alert("All fields are required to add a new dish!");
+  //   // }
+  // };
+
+  const handleAddDish = async () => {
+    console.log(newDish);
+    const { name, price,quantity, image, category, description } = newDish;
+    if (!name || !price || !quantity || !image || !category || !description) {
+      alert("All fields are required to add a new dish!");
+    } else {
+      // Prepare form data
+      const reqBody = new FormData();
+      reqBody.append("name", name);
+      reqBody.append("price", price);
+      reqBody.append("quantity", quantity);
+      reqBody.append("image", image);
+      reqBody.append("category", category);
+      reqBody.append("description", description);
+  
+      const token = sessionStorage.getItem("token");
+      console.log(token);
+      
+      if (token) {
+        const reqHeader = {
+          "Content-Type": "multipart/form-data",
+          Authorization: Bearer ${token},
+        };
+        console.log(reqHeader);
+        
+        try {
+          console.log('helo');
+          
+          const response = await addFoodAPI(reqBody, reqHeader);
+          console.log(response);
+          if (response.status >= 200 && response.status < 300) {
+            alert("Food added successfully");
+            
+            // Update the dishes state to display the new dish
+            setDishes((prev) => [
+              ...prev,
+              { name, price: $${price}, category, description, image: preview },
+            ]);
+  
+            // Reset modal state
+            setNewDish({ name: "", price: "", image: "", category: "", description: "" });
+            setPreview("");
+            setShowDishModal(false);
+          } else {
+            console.log("Error occurred while adding the dish.");
+          }
+        } catch (err) {
+          console.error("Error:", err);
+        }
+      }
+    }
+  };
+  
+  return (
+    <>
+      <div className="flex gap-4">
+        {/* Categories Section */}
+        <div className="w-1/4 bg-gray-100 p-4 m-4 rounded-lg shadow-md">
+          <h2 className="font-bold text-lg mb-4">Dishes Category</h2>
+          <ul>
+            {categories.length === 0 ? (
+              <p className="text-gray-500 italic">No categories added yet.</p>
+            ) : (
+              categories.map((category, index) => (
+                <li
+                  key={index}
+                  className="p-2 cursor-pointer hover:bg-gray-200 rounded-md"
+                >
+                  {category}
+                </li>
+              ))
+            )}
+          </ul>
+          <button
+            onClick={() => setShowCategoryModal(true)}
+            className="mt-4 w-full bg-yellow-500 text-white p-2 rounded-md hover:bg-yellow-600"
+          >
+            + Add New Category
+          </button>
+        </div>
+
+        {/* Dish Management Section */}
+        <div className="w-3/4">
+          <h2 className="font-bold text-xl mb-4">Manage Dishes</h2>
+          <div className="grid grid-cols-4 gap-4">
+            <div
+              onClick={() => setShowDishModal(true)}
+              className="p-4 border-dashed border-2 border-gray-400 flex justify-center items-center rounded-lg cursor-pointer"
+            >
+              + Add New Dish
+            </div>
+            {dishes.length === 0 ? (
+              <p className="text-gray-500 italic col-span-4">No dishes added yet.</p>
+            ) : (
+              dishes.map((dish, index) => (
+                <div
+                  key={index}
+                  className="border p-4 rounded-lg shadow-sm hover:shadow-lg"
+                >
+                  <div className="h-20 w-full bg-gray-200 mb-2 rounded-lg"></div>
+                  <h3 className="text-sm font-semibold">{dish.name}</h3>
+                  <p className="text-gray-600">{dish.price}</p>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Add New Category Modal */}
+      <Modal
+        show={showCategoryModal}
+        size="md"
+        onClose={() => setShowCategoryModal(false)}
+      >
+        <Modal.Header>Add New Category</Modal.Header>
+        <Modal.Body>
+          <TextInput
+            placeholder="Category Name"
+            value={newCategory}
+            onChange={(e) => setNewCategory(e.target.value)}
+          />
+        </Modal.Body>
+        <Modal.Footer>
+          <button
+            onClick={handleAddCategory}
+            className="bg-yellow-500 hover:bg-yellow-600 px-6 py-2 rounded-md"
+          >
+            Add
+          </button>
+          <button
+            className="text-yellow-800 px-6 py-2 rounded-md"
+            onClick={() => setShowCategoryModal(false)}
+          >
+            Cancel
+          </button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Add New Dish Modal */}
+      <Modal
+        show={showDishModal}
+        size="md"
+        onClose={() => setShowDishModal(false)}
+      >
+        <Modal.Header>Add New Dish</Modal.Header>
+        <Modal.Body>
+          <div className="mb-4">
+            <label
+              htmlFor="dishImage"
+              className="block bg-yellow-500 text-white text-sm font-medium py-2 px-4 rounded-md cursor-pointer hover:bg-yellow-600"
+            >
+              Upload Dish Image
+            </label>
+            <input
+              id="dishImage"
+              type="file"
+              onChange={(e) =>
+                setNewDish((prev) => ({ ...prev, image: e.target.files[0] }))
+              }
+              className="hidden"
+            />
+            {newDish.image && (
+              <img src={preview} alt="" />
+            )}
+          </div>
+          <TextInput
+            placeholder="Dish Name"
+            value={newDish.name}
+            onChange={(e) =>
+              setNewDish((prev) => ({ ...prev, name: e.target.value }))
+            }
+            className="mb-4"
+          />
+          <TextInput
+            placeholder="Category"
+            value={newDish.category}
+            onChange={(e) =>
+              setNewDish((prev) => ({ ...prev, category: e.target.value }))
+            }
+            className="mb-4"
+          />
+          <TextInput
+            placeholder="Quantity"
+            value={newDish.quantity}
+            onChange={(e) =>
+              setNewDish((prev) => ({ ...prev, category: e.target.value }))
+            }
+            className="mb-4"
+          />
+          <TextInput
+            placeholder="Description"
+            value={newDish.description}
+            onChange={(e) =>
+              setNewDish((prev) => ({ ...prev, description: e.target.value }))
+            }
+            className="mb-4"
+          />
+          <TextInput
+            placeholder="Price"
+            type="number"
+            value={newDish.price}
+            onChange={(e) =>
+              setNewDish((prev) => ({ ...prev, price: e.target.value }))
+            }
+          />
+        </Modal.Body>
+        <Modal.Footer>
+          <button
+            className="bg-yellow-500 hover:bg-yellow-600 px-6 py-2 rounded-md"
+            onClick={handleAddDish}
+          >
+            Add
+          </button>
+          <button
+            className="text-yellow-800 px-6 py-2 rounded-md"
+            onClick={() => setShowDishModal(false)}
+          >
+            Cancel
+          </button>
+        </Modal.Footer>
+      </Modal>
+    </>
+  );
+};
+
+export default ManageDishes;

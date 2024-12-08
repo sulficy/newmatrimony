@@ -1,7 +1,20 @@
-import { commonAPI } from "./commonAPI"
-import { serverUrl } from "./serverUrl"
+import { commonAPI } from "../services/commonAPI"
+import { serverUrl } from "../services/serverUrl"
 
-// example for api struture - getVideoAPI is a function and commonAPI is the basic struture of the API and the server url is the url for the hosted server
-// export const getVideoAPI =async()=>{
-//     return await commonAPI('get',`${serverUrl}/videos`,{})
-// }
+export const registerAPI = async(reqBody) => {
+    return await commonAPI('post',`${serverUrl}/api/register`,reqBody,"")
+}
+export const loginAPI = async(reqBody) => {
+    return await commonAPI('post',`${serverUrl}/api/login`,reqBody,"")
+}
+
+//Add doctors
+export const addDoctorAPI = async(reqBody,reqHeader)=>{
+    return await commonAPI('post',`${serverUrl}/api/dashboard/add-doctors`,reqBody,reqHeader)
+}
+
+//get all doctors
+
+export const getDoctorAPI = async(reqHeader)=>{
+    return await commonAPI('get',`${serverUrl}/api/dashboard/get-doctors`,"",reqHeader)
+}
