@@ -2,22 +2,72 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import Sidebar from '../components/sideBar';
 import TopBar from '../components/topBar';
+import { getAppointAPI, getDoctorAPI } from '../services/allAPIs';
+
 
 const Dashboard = () => {
-  const [analytics, setAnalytics] = useState({});
+  const [allAppoint, setAllAppoint] = useState([]);
 
   useEffect(() => {
-    fetchAnalytics();
+    const handleView = async () => {
+      const token = sessionStorage.getItem('token');
+      console.log(token);
+
+      if (token) {
+        const reqHeader = {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        };
+        console.log(reqHeader);
+        try {
+          const response = await getAppointAPI(reqHeader);
+          console.log(response);
+          setAllAppoint(response.data);
+        } catch (err) {
+          console.log(err);
+        }
+      }
+    };
+
+    handleView();
+  }, []);
+  // console.log(allAppoint);
+  const appointments = allAppoint.length  
+  // console.log(appointments);
+  const [allDoctors, setAllDoctors] = useState([]);
+
+  useEffect(() => {
+    const handleGet = async () => {
+      const token = sessionStorage.getItem('token');
+      console.log(token);
+
+      if (token) {
+        const reqHeader = {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        };
+        console.log(reqHeader);
+        try {
+          const response = await getDoctorAPI(reqHeader);
+          console.log(response);
+          setAllDoctors(response.data);
+        } catch (err) {
+          console.log(err);
+        }
+      }
+    };
+
+    handleGet();
   }, []);
 
-  const fetchAnalytics = async () => {
-    try {
-      const response = await axios.get('/api/admin/analytics');
-      setAnalytics(response.data);
-    } catch (error) {
-      console.error('Error fetching analytics:', error.message);
-    }
-  };
+  // console.log(allDoctors);
+  const allDoc = allDoctors.length
+  console.log(allDoc);
+  
+  
+
+  
+    
 
   return (
     <div className="flex h-screen bg-gray-100">
@@ -38,13 +88,13 @@ const Dashboard = () => {
             <div className="bg-white shadow-md rounded-lg p-6 text-center">
               <h3 className="text-lg font-medium text-gray-700">Total Doctors</h3>
               <p className="text-4xl font-bold text-blue-800">
-                {analytics.totalDoctors || 0}
+                {appointments}
               </p>
             </div>
             <div className="bg-white shadow-md rounded-lg p-6 text-center">
               <h3 className="text-lg font-medium text-gray-700">Total Appointments</h3>
               <p className="text-4xl font-bold text-blue-800">
-                {analytics.totalAppointments || 0}
+                {allDoc}
               </p>
             </div>
           </div>

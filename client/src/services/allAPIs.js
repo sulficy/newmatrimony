@@ -18,3 +18,19 @@ export const addDoctorAPI = async(reqBody,reqHeader)=>{
 export const getDoctorAPI = async(reqHeader)=>{
     return await commonAPI('get',`${serverUrl}/api/dashboard/get-doctors`,"",reqHeader)
 }
+
+//Add review
+export const addReviewAPI = async(reqBody,reqHeader)=>{
+    return await commonAPI('post',`${serverUrl}/api/review`,reqBody,reqHeader)
+}
+
+
+//add appointment
+export const addappointment = async(reqBody,reqHeader)=>{
+    return await commonAPI('post',`${serverUrl}/api/appointment`,reqBody,reqHeader)
+}
+//get appopintment
+export const getAppointAPI = async(reqHeader)=>{
+    return await commonAPI('get',`${serverUrl}/api/getappoint`,"",reqHeader)
+}
+

@@ -2,38 +2,43 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Sidebar from '../components/sideBar';
 import TopBar from '../components/topBar';
+import { getAppointAPI} from '../services/allAPIs';
+
 
 const Appointments = () => {
-  const [appointments, setAppointments] = useState([]);
+  const [allAppoint, setAllAppoint] = useState([]);
 
-  // Fetch Appointments (Placeholder)
   useEffect(() => {
-    // Simulating API Call
-    const fetchAppointments = async () => {
-      // Example Data - Replace with actual API call
-      const exampleAppointments = [
-        {
-          id: 1,
-          patientName: 'John Doe',
-          doctorName: 'Dr. Smith',
-          date: '2024-12-10',
-          time: '10:30 AM',
-          status: 'Confirmed',
-        },
-        {
-          id: 2,
-          patientName: 'Jane Roe',
-          doctorName: 'Dr. Adams',
-          date: '2024-12-11',
-          time: '2:00 PM',
-          status: 'Pending',
-        },
-      ];
-      setAppointments(exampleAppointments);
+    const handleView = async () => {
+      const token = sessionStorage.getItem('token');
+      console.log(token);
+
+      if (token) {
+        const reqHeader = {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        };
+        console.log(reqHeader);
+        try {
+          const response = await getAppointAPI(reqHeader);
+          console.log(response);
+          setAllAppoint(response.data);
+        } catch (err) {
+          console.log(err);
+        }
+      }
     };
 
-    fetchAppointments();
+    handleView();
   }, []);
+  console.log(allAppoint);
+  const length = allAppoint.length  
+  console.log(length);
+
+
+  
+  
+  
 
   return (
     <div className="flex h-screen">
@@ -60,21 +65,19 @@ const Appointments = () => {
               <thead className="bg-blue-600 text-white">
                 <tr>
                   <th className="p-4 text-left border border-gray-300">Patient Name</th>
-                  <th className="p-4 text-left border border-gray-300">Doctor Name</th>
+                  <th className="p-4 text-left border border-gray-300">phone number</th>
                   <th className="p-4 text-left border border-gray-300">Date</th>
                   <th className="p-4 text-left border border-gray-300">Time</th>
-                  <th className="p-4 text-left border border-gray-300">Status</th>
                   <th className="p-4 text-left border border-gray-300">Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {appointments.map((appointment) => (
-                  <tr key={appointment.id} className="hover:bg-gray-50 transition">
-                    <td className="p-4 border border-gray-300">{appointment.patientName}</td>
-                    <td className="p-4 border border-gray-300">{appointment.doctorName}</td>
-                    <td className="p-4 border border-gray-300">{appointment.date}</td>
-                    <td className="p-4 border border-gray-300">{appointment.time}</td>
-                    <td className="p-4 border border-gray-300">{appointment.status}</td>
+                {allAppoint.length>0?allAppoint.map((appoint) => (
+                  <tr key={appoint.id} className="hover:bg-gray-50 transition">
+                    <td className="p-4 border border-gray-300">{appoint.name}</td>
+                    <td className="p-4 border border-gray-300">{appoint.reason}</td>
+                    <td className="p-4 border border-gray-300">{appoint.date}</td>
+                    <td className="p-4 border border-gray-300">{appoint.time}</td>
                     <td className="p-4 border border-gray-300 flex items-center gap-2">
                       <button className="text-blue-500 hover:text-blue-600 transition">
                         Edit
@@ -84,9 +87,8 @@ const Appointments = () => {
                       </button>
                     </td>
                   </tr>
-                ))}
-                {appointments.length === 0 && (
-                  <tr>
+                )):
+                <tr>
                     <td
                       colSpan="6"
                       className="p-4 text-center text-gray-500"
@@ -94,7 +96,10 @@ const Appointments = () => {
                       No Appointments Found
                     </td>
                   </tr>
-                )}
+                }
+                
+                  
+                
               </tbody>
             </table>
           </div>

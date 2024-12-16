@@ -55,9 +55,7 @@ function Services() {
                 <span className="bg-blue-200 text-blue-800 rounded-full w-8 h-8 flex items-center justify-center">
                   {index + 1}
                 </span>
-                <button className="bg-green-100 text-green-700 hover:bg-green-200 p-2 rounded-full">
-                  <img alt="arrow-right" src="https://openui.fly.dev/openui/24x24.svg?text=→" />
-                </button>
+                {/* / */}
               </div>
             </div>
           ))}

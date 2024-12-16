@@ -1,12 +1,11 @@
 import React from 'react'
-import { Link, Navigate } from 'react-router-dom'
+import { Link, Navigate, useNavigate } from 'react-router-dom'
 import { FaSignOutAlt } from 'react-icons/fa';
-
 
 function Header() {
 
   const token = sessionStorage.getItem("token")
-
+  const navigate = useNavigate()
   const handleLogout = () => {
     sessionStorage.removeItem("token"); // Remove token from session storage
     navigate("/");
@@ -52,7 +51,7 @@ function Header() {
             >
               <FaSignOutAlt className="text-4xl text-red-600 " />
             </button>
-          )}
+          )}
               </div>
             </nav>
     </div>
